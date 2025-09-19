@@ -20,7 +20,7 @@
 
   <body>
 
-    <canvas id="canvasOne" width="1000" height="500"></canvas>
+    <canvas id="canvasOne" width="400" height="300"></canvas>
     <script type="text/javascript">
 
       
@@ -36,9 +36,21 @@
 		// Create a filled rectangle 
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    //Add name to Rectangle
+    ctx.font = '50px Arial';
+    ctx.fillStyle = 'blue';
+    ctx.fillText("Fionn Q", 50, 50);
+
+    //Create Triangle
+    ctx.beginPath();
+    ctx.moveTo(200,40);
+    ctx.lineTo(360,200);
+    ctx.lineTo(40,200);
+    ctx.closePath()
+    ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
+    ctx.fill();
+    ctx.stroke();
     
-	  
-		
     </script>
 
   </body>
