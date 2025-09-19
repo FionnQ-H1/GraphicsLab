@@ -18,13 +18,23 @@
 
   <body>
 
-    <canvas id="canvasOne"></canvas>
+    <canvas id="canvasOne" width="1600" height="900"></canvas>
 
     <script type="text/javascript">
+
+      
 		// Gets a handle to the element with id canvasOne.
-		
+		const canvas = document.getElementById('canvasOne');
+
 		// Set the canvas up for drawing in 2D.
-		
+		const ctx = canvas.getContext('2d')
+
+    ctx.font = '50px Calibri';
+    ctx.fillStyle = 'red';
+
+    const name= 'Fionn Q';
+    ctx.fillText(name, 1200, 500);
+
 		// Set the fill colour to bright red.
 		
 		// Create a filled rectangle 
