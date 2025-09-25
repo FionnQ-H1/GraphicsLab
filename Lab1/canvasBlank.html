@@ -7,13 +7,9 @@
     <title>Canvas</title>
 
     <style type="text/css">
-
-
       canvas {
         border: 10px solid black;
       }
-      
-	
     </style>
 
   </head>
@@ -23,34 +19,71 @@
     <canvas id="canvasOne" width="400" height="300"></canvas>
     <script type="text/javascript">
 
-      
-		// Gets a handle to the element with id canvasOne.
-		const canvas = document.getElementById('canvasOne');
+      // Get the canvas element
+      const canvas = document.getElementById('canvasOne');
 
-		// Set the canvas up for drawing in 2D.
-		const ctx = canvas.getContext('2d')
+      // Get 2D drawing context
+      const ctx = canvas.getContext('2d');
 
-		// Set the fill colour to bright red.
-    ctx.fillStyle = "rgb(255, 0, 0)";
+      // Fill whole canvas with red
+      ctx.fillStyle = "rgb(255, 0, 0)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-		// Create a filled rectangle 
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Write name on the canvas
+      ctx.font = '50px Arial';
+      ctx.fillStyle = 'blue';
+      ctx.fillText("Fionn Q", 50, 50);
 
-    //Add name to Rectangle
-    ctx.font = '50px Arial';
-    ctx.fillStyle = 'blue';
-    ctx.fillText("Fionn Q", 50, 50);
+      // Draw a green triangle with some transparency
+      ctx.beginPath();
+      ctx.moveTo(200, 40);
+      ctx.lineTo(360, 200);
+      ctx.lineTo(40, 200);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
+      ctx.fill();
+      ctx.stroke();
 
-    //Create Triangle
-    ctx.beginPath();
-    ctx.moveTo(200,40);
-    ctx.lineTo(360,200);
-    ctx.lineTo(40,200);
-    ctx.closePath()
-    ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
-    ctx.fill();
-    ctx.stroke();
-    
+      // Draw first circle - purple with black outline
+      ctx.beginPath();
+      ctx.arc(100, 250, 40, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(128, 0, 128, 0.6)";
+      ctx.fill();
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Draw second circle - orange with white outline
+      ctx.beginPath();
+      ctx.arc(140, 280, 40, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 165, 0, 0.6)";
+      ctx.fill();
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Draw a blue square
+      const squareX = 250;
+      const squareY = 150;
+      const squareSize = 100;
+      ctx.fillStyle = "rgba(0, 0, 255, 0.4)";
+      ctx.strokeStyle = "navy";
+      ctx.lineWidth = 3;
+      ctx.fillRect(squareX, squareY, squareSize, squareSize);
+      ctx.strokeRect(squareX, squareY, squareSize, squareSize);
+
+      // Draw a yellow triangle inside the square
+      ctx.beginPath();
+      ctx.moveTo(squareX, squareY); // top-left corner
+      ctx.lineTo(squareX + squareSize, squareY); // top-right corner
+      ctx.lineTo(squareX + squareSize / 2, squareY + squareSize); // bottom-center
+      ctx.closePath();
+      ctx.fillStyle = "rgba(255, 255, 0, 0.5)";
+      ctx.fill();
+      ctx.strokeStyle = "goldenrod";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
     </script>
 
   </body>
