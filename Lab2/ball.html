@@ -50,11 +50,15 @@
 
       // Update the vertical location.
       y += dy;
+
+       if (y + radius >= canvasHeight) {
+        dy = -dy;  // Reverse vertical velocity - move upward
+      }
+
       
-      // If the ball hits the bottom of the canvas.
-      if (y + radius  > canvasHeight) {
-      // Change ball's direction. (reverse the speed)
-          dy = 0 ;
+       if (y - radius <= 0) {
+
+        dy = -dy;  // Reverse vertical velocity - move downward
       }
 
 
