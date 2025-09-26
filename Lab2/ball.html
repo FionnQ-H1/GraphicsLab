@@ -22,9 +22,9 @@
 <body>
 
   <!-- Added name above canvas-->
-  <h1> Fionn Qualter</h1>
+  <h1> Fionn Qualter </h1>
   <!-- Added canvas paramaters  -->
-  <canvas id="canvas-for-ball" width="400" length="400"></canvas>
+  <canvas id="canvas-for-ball" width="400" height="400"></canvas>
 
   <script type="text/javascript">
     // Gets a handle to the element with id canvasOne.
@@ -34,17 +34,30 @@
 
     // The vertical location of the ball.
     var y = 10;
+    var dy = 1; // Vertical speed (ball moves down)
+    var radius = 10;
+    var canvasHeight = canvas.height;
+    var x = 50; // fixed position
+
     // A function to repeat every time the animation loops.
     function repeatme() {
       // clearRect  Clears the canvas at each step of animation so only one copy of the ball is visible
-      ctx.clearRect(left, top, width, height)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
       // Draw the ball (stroked, not filled).
       ctx.beginPath();
-      ctx.arc(50, y, 3, 0, 2 * Math.PI);
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
       ctx.stroke();
 
-      // Update the y location.
-      y += 1;
+      // Update the vertical location.
+      y += dy;
+      
+      // If the ball hits the bottom of the canvas.
+      if (y + radius  > canvasHeight) {
+      // Change ball's direction. (reverse the speed)
+          dy = 0 ;
+      }
+
+
 
       window.requestAnimationFrame(repeatme);
     }
