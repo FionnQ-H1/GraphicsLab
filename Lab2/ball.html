@@ -33,20 +33,53 @@
     var ctx = canvas.getContext("2d");
 
 
-    class Ball {
+    class PacManBall {
       constructor(x, y, r, dx, dy) {
         this.x = x;
         this.y = y;
         this.r = r;
         this.dx = dx;
         this.dy = dy;
+
+        this.rotation = 0;
+        this.rotationSpeed= 0.05; // Super slow so it looks more like rolling then spinning
+        this.mouthPhase = 0;
+        this.mouthSpeed = 0.15; // Open / Close
+      }
+
+      heading() {
+        return Math.atan2(this.dy, this.dx);
       }
     
  draw(ctx) {
+        this.mouthPhase += this.mouthSpeed;
+        const mouth = 0.5 + 0.3 * Math.sin(this.mouthPhase); // Open / Close radians
+        const angle = this.heading() + this.rotation;
+
+        // PacMan shape
+        const start = angle + mouth / 2;
+        const end = angle + Math.PI * 2 - mouth / 2;
+
+
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        ctx.moveTo(this.x, this.y);
+        ctx.arc(this.x, this.y, this.r, start, end, false);
+        ctx.closePath();
+        ctx.fillStyle = "#f5d10d";
+        ctx.fill();
+        ctx.lineWidth = 2;
         ctx.stroke();
+
+        // Pac-Man eye
+        const eyeAngle = angle - Math.PI / 2;
+        const ex = this.x + (this.r * 0.4) * Math.cos(eyeAngle);
+        const ey = this.y + (this.r * 0.4) * Math.sin(eyeAngle);
+        ctx.beginPath();
+        ctx.arc(ex, ey, Math.max(1.5, this.r * 0.08), 0, Math.PI * 2);
+        ctx.fillStyle = "#111";
+        ctx.fill();
       }
+
 
       move(canvas) {
         // update position
@@ -57,34 +90,43 @@
         if (this.y + this.r >= canvas.height) {
           this.y = canvas.height - this.r;
           this.dy = -Math.abs(this.dy);
+          this.rotationSpeed = -this.rotationSpeed; // reverse roll on bounce
         }
         if (this.y - this.r <= 0) {
           this.y = this.r;
           this.dy = Math.abs(this.dy);
+          this.rotationSpeed = -this.rotationSpeed;
         }
 
         // horizontal bounces
         if (this.x + this.r >= canvas.width) {
           this.x = canvas.width - this.r;
           this.dx = -Math.abs(this.dx);
+          this.rotationSpeed = -this.rotationSpeed;
         }
         if (this.x - this.r <= 0) {
           this.x = this.r;
           this.dx = Math.abs(this.dx);
+          this.rotationSpeed = -this.rotationSpeed;
+
         }
       }
     
-      resize(newRadius) {
-        this.r = Math.max(1, newRadius);
+      resize(newR) {
+        this.r = Math.max(4, newR);
+      }
+
+      rotate(dRadians) {
+        this.rotation += dRadians;
       }
     }
-        var ball = new Ball(50, 10, 10, 2, 2);
 
+      var pac = new PacManBall(80, 320, 22, 7, -3);
       function repeatme() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ball.move(canvas);
-      ball.draw(ctx);
+ 
+      pac.move(canvas);
+      pac.draw(ctx);
 
       window.requestAnimationFrame(repeatme);
       }
