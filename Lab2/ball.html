@@ -38,6 +38,7 @@
     var radius = 10;
     var canvasHeight = canvas.height;
     var x = 50; // fixed position
+    var dx = 2; // Horizontal speed
 
     // A function to repeat every time the animation loops.
     function repeatme() {
@@ -48,8 +49,9 @@
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
       ctx.stroke();
 
-      // Update the vertical location.
+      // Update the position
       y += dy;
+      x += dx;
 
        if (y + radius >= canvasHeight) {
         dy = -dy;  // Reverse vertical velocity - move upward
@@ -59,6 +61,18 @@
        if (y - radius <= 0) {
 
         dy = -dy;  // Reverse vertical velocity - move downward
+      }
+
+      // Bounce to the right
+       if (x + radius >= canvas.width) {
+        x = canvas.width - radius;
+        dx = -Math.abs(dx);
+      }
+
+      // Bounce to the right
+       if (x - radius <= 0) {
+        x = radius;
+        dx = Math.abs(dx);
       }
 
 
