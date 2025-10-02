@@ -32,53 +32,62 @@
     // Get a 2D context for the canvas.
     var ctx = canvas.getContext("2d");
 
-    // The vertical location of the ball.
-    var y = 10;
-    var dy = 1; // Vertical speed (ball moves down)
-    var radius = 10;
-    var canvasHeight = canvas.height;
-    var x = 50; // fixed position
-    var dx = 2; // Horizontal speed
 
-    // A function to repeat every time the animation loops.
-    function repeatme() {
-      // clearRect  Clears the canvas at each step of animation so only one copy of the ball is visible
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      // Draw the ball (stroked, not filled).
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      ctx.stroke();
-
-      // Update the position
-      y += dy;
-      x += dx;
-
-       if (y + radius >= canvasHeight) {
-        dy = -dy;  // Reverse vertical velocity - move upward
+    class Ball {
+      constructor(x, y, r, dx, dy) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.dx = dx;
+        this.dy = dy;
+      }
+    
+ draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+        ctx.stroke();
       }
 
-      
-       if (y - radius <= 0) {
+      move(canvas) {
+        // update position
+        this.x += this.dx;
+        this.y += this.dy;
 
-        dy = -dy;  // Reverse vertical velocity - move downward
+        // vertical bounces
+        if (this.y + this.r >= canvas.height) {
+          this.y = canvas.height - this.r;
+          this.dy = -Math.abs(this.dy);
+        }
+        if (this.y - this.r <= 0) {
+          this.y = this.r;
+          this.dy = Math.abs(this.dy);
+        }
+
+        // horizontal bounces
+        if (this.x + this.r >= canvas.width) {
+          this.x = canvas.width - this.r;
+          this.dx = -Math.abs(this.dx);
+        }
+        if (this.x - this.r <= 0) {
+          this.x = this.r;
+          this.dx = Math.abs(this.dx);
+        }
       }
-
-      // Bounce to the right
-       if (x + radius >= canvas.width) {
-        x = canvas.width - radius;
-        dx = -Math.abs(dx);
+    
+      resize(newRadius) {
+        this.r = Math.max(1, newRadius);
       }
+    }
+        var ball = new Ball(50, 10, 10, 2, 2);
 
-      // Bounce to the right
-       if (x - radius <= 0) {
-        x = radius;
-        dx = Math.abs(dx);
-      }
+      function repeatme() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
+      ball.move(canvas);
+      ball.draw(ctx);
 
       window.requestAnimationFrame(repeatme);
-    }
+      }
 
     // Get the animation going.
     repeatme();
