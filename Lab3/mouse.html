@@ -15,7 +15,7 @@
   </head>
 
   <body>
-	<p>This is a paragraph.</p>
+  <p></p>
 
     <canvas id="canvas-for-ball"></canvas>
 
@@ -30,8 +30,14 @@
       ctx.fillStyle = "rgb(255, 0, 0)";
       
       canvas.addEventListener("click", function(event) { 
+        console.log(event); // log the event object
+
+        var x = event.clientX - canvas.offsetLeft;
+        var y = event.clientY - canvas.offsetRight;
+
         ctx.beginPath();
-        ctx.arc(50, 50, 6, 0, 2 * Math.PI);
+        // intentionally use viewport coords (will be offset from the canvas)
+        ctx.arc(event.clientX, event.clientY, 6, 0, 2 * Math.PI);
         ctx.fill();
         
         noClicks += 1;
