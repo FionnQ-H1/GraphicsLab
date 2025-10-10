@@ -17,12 +17,12 @@
   <body>
   <p></p>
 
-    <canvas id="canvas-for-ball"></canvas>
+    <canvas id="canvas-for-ball" width="300" height="300"></canvas>
 
     <script type="text/javascript">
       var noClicks = 0;
       
-      // Gets a handle to the element with id canvasOne.
+      // Gets a handle to the element with id canvas-for-ball.
       var canvas = document.getElementById("canvas-for-ball");
       // Get a 2D context for the canvas.
       var ctx = canvas.getContext("2d");
@@ -32,12 +32,14 @@
       canvas.addEventListener("click", function(event) { 
         console.log(event); // log the event object
 
-        var x = event.clientX - canvas.offsetLeft;
-        var y = event.clientY - canvas.offsetRight;
+        // Correct conversion from viewport → canvas coordinates
+        var rect = canvas.getBoundingClientRect();
+        var x = event.clientX - rect.left;
+        var y = event.clientY - rect.top;
 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
-        // intentionally use viewport coords (will be offset from the canvas)
-        ctx.arc(event.clientX, event.clientY, 6, 0, 2 * Math.PI);
+        ctx.arc(x, y, 6, 0, 2 * Math.PI); // centered under the cursor
         ctx.fill();
         
         noClicks += 1;
