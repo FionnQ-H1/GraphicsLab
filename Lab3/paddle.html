@@ -42,9 +42,9 @@
         this.dy = dy;
 
         this.rotation = 0;
-        this.rotationSpeed= 0.05;
+        this.rotationSpeed= 0.05; // Super slow so it looks more like rolling then spinning
         this.mouthPhase = 0;
-        this.mouthSpeed = 0.15;
+        this.mouthSpeed = 0.15; // Open / Close
       }
 
       heading() {
@@ -53,9 +53,10 @@
     
       draw(ctx) {
         this.mouthPhase += this.mouthSpeed;
-        const mouth = 0.5 + 0.3 * Math.sin(this.mouthPhase);
+        const mouth = 0.5 + 0.3 * Math.sin(this.mouthPhase); // Open / Close radians
         const angle = this.heading() + this.rotation;
 
+        // PacMan shape
         const start = angle + mouth / 2;
         const end = angle + Math.PI * 2 - mouth / 2;
 
@@ -68,6 +69,7 @@
         ctx.lineWidth = 2;
         ctx.stroke();
 
+        // Pac-Man eye
         const eyeAngle = angle - Math.PI / 2;
         const ex = this.x + (this.r * 0.4) * Math.cos(eyeAngle);
         const ey = this.y + (this.r * 0.4) * Math.sin(eyeAngle);
@@ -77,14 +79,17 @@
         ctx.fill();
       }
 
+
       move(canvas) {
+        // update position
         this.x += this.dx;
         this.y += this.dy;
 
+        // vertical bounces
         if (this.y + this.r >= canvas.height) {
           this.y = canvas.height - this.r;
           this.dy = -Math.abs(this.dy);
-          this.rotationSpeed = -this.rotationSpeed;
+          this.rotationSpeed = -this.rotationSpeed; // reverse roll on bounce
         }
         if (this.y - this.r <= 0) {
           this.y = this.r;
@@ -92,6 +97,7 @@
           this.rotationSpeed = -this.rotationSpeed;
         }
 
+        // horizontal bounces
         if (this.x + this.r >= canvas.width) {
           this.x = canvas.width - this.r;
           this.dx = -Math.abs(this.dx);
@@ -101,9 +107,10 @@
           this.x = this.r;
           this.dx = Math.abs(this.dx);
           this.rotationSpeed = -this.rotationSpeed;
+
         }
       }
-
+    
       resize(newR) {
         this.r = Math.max(4, newR);
       }
@@ -113,7 +120,7 @@
       }
     }
 
-    // Added empty Paddle class (Step 2)
+    // Paddle class (now with draw)
     class Paddle {
       constructor(x, y, width, height, speed) {
         this.x = x;
@@ -122,17 +129,29 @@
         this.height = height;
         this.speed = speed || 6;
       }
+
+      draw() {
+        ctx.beginPath();
+        ctx.rect(this.x, this.y, this.width, this.height);
+        ctx.stroke();
+      }
     }
 
     var pac = new PacManBall(80, 320, 22, 7, -3);
+    var leftPaddle = new Paddle(10, 160, 10, 80, 8);
 
     function repeatme() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+ 
       pac.move(canvas);
       pac.draw(ctx);
+
+      leftPaddle.draw();
+
       window.requestAnimationFrame(repeatme);
     }
 
+    // Get the animation going.
     repeatme();
   </script>
 
