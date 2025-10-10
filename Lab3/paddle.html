@@ -145,20 +145,24 @@
 
     var pac = new PacManBall(80, 320, 22, 7, -3);
     var leftPaddle = new Paddle(10, 160, 10, 80, 8);
+    var rightPaddle = new Paddle(canvas.width - 20, 160, 10, 80, 8); // mirrored on the right
 
     // ArrowUp / ArrowDown control the left paddle
     window.addEventListener("keydown", function (e) {
       if (e.key === "ArrowUp") leftPaddle.moveDy(-leftPaddle.speed);
       if (e.key === "ArrowDown") leftPaddle.moveDy(leftPaddle.speed);
+
+      // W / S control the right paddle
+      if (e.key === "w" || e.key === "W") rightPaddle.moveDy(-rightPaddle.speed);
+      if (e.key === "s" || e.key === "S") rightPaddle.moveDy(rightPaddle.speed);
     });
 
     // Mouse moves the left paddle to the cursor's Y (canvas-relative, centered)
     canvas.addEventListener("mousemove", function (e) {
       var rect = canvas.getBoundingClientRect();
       var y = e.clientY - rect.top;
-      // center the paddle on the mouse y
       leftPaddle.y = y - leftPaddle.height / 2;
-      // clamp to canvas
+
       if (leftPaddle.y < 0) leftPaddle.y = 0;
       if (leftPaddle.y + leftPaddle.height > canvas.height) {
         leftPaddle.y = canvas.height - leftPaddle.height;
@@ -172,6 +176,7 @@
       pac.draw(ctx);
 
       leftPaddle.draw();
+      rightPaddle.draw();
 
       window.requestAnimationFrame(repeatme);
     }
