@@ -120,7 +120,7 @@
       }
     }
 
-    // Paddle class (now with draw)
+    // Paddle class (with moveDy)
     class Paddle {
       constructor(x, y, width, height, speed) {
         this.x = x;
@@ -135,10 +135,35 @@
         ctx.rect(this.x, this.y, this.width, this.height);
         ctx.stroke();
       }
+
+      moveDy(dy) {
+        this.y += dy;
+        if (this.y < 0) this.y = 0;
+        if (this.y + this.height > canvas.height) this.y = canvas.height - this.height;
+      }
     }
 
     var pac = new PacManBall(80, 320, 22, 7, -3);
     var leftPaddle = new Paddle(10, 160, 10, 80, 8);
+
+    // ArrowUp / ArrowDown control the left paddle
+    window.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowUp") leftPaddle.moveDy(-leftPaddle.speed);
+      if (e.key === "ArrowDown") leftPaddle.moveDy(leftPaddle.speed);
+    });
+
+    // Mouse moves the left paddle to the cursor's Y (canvas-relative, centered)
+    canvas.addEventListener("mousemove", function (e) {
+      var rect = canvas.getBoundingClientRect();
+      var y = e.clientY - rect.top;
+      // center the paddle on the mouse y
+      leftPaddle.y = y - leftPaddle.height / 2;
+      // clamp to canvas
+      if (leftPaddle.y < 0) leftPaddle.y = 0;
+      if (leftPaddle.y + leftPaddle.height > canvas.height) {
+        leftPaddle.y = canvas.height - leftPaddle.height;
+      }
+    });
 
     function repeatme() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
