@@ -56,8 +56,16 @@
 
             draw() {
                 var c = this.center();
+
+                // Radial gradient fill for paddle ball
+                var g = ctx.createRadialGradient(c.cx, c.cy, c.r * 0.2, c.cx, c.cy, c.r);
+                g.addColorStop(0, "rgba(180,180,255,1)");
+                g.addColorStop(1, "rgba(60,60,200,1)");
+                ctx.fillStyle = g;
+
                 ctx.beginPath();
                 ctx.arc(c.cx, c.cy, c.r, 0, Math.PI * 2);
+                ctx.fill();
                 ctx.stroke();
             }
 
@@ -69,19 +77,23 @@
         }
 
         class MatchBall {
-            constructor(x, y, r, dx, dy, color) {
+            constructor(x, y, r, dx, dy) {
                 this.x = x;
                 this.y = y;
                 this.r = r;
                 this.dx = dx;
                 this.dy = dy;
-                this.color = color || "rgb(200,0,0)";
             }
 
             draw() {
+                // Radial gradient fill for match ball
+                var g = ctx.createRadialGradient(this.x, this.y, this.r * 0.2, this.x, this.y, this.r);
+                g.addColorStop(0, "rgba(255,180,180,1)");
+                g.addColorStop(1, "rgba(200,0,0,1)");
+                ctx.fillStyle = g;
+
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
                 ctx.fill();
                 ctx.stroke();
             }
@@ -119,7 +131,7 @@
 
         var leftPaddle = new Paddle(10, 160, 10, 80, 8);
         var rightPaddle = new Paddle(canvas.width - 20, 160, 10, 80, 8); // mirrored on the right
-        var matchBall = new MatchBall(200, 120, 10, 3, 2, "rgb(200,0,0)");
+        var matchBall = new MatchBall(200, 120, 10, 3, 2);
 
         var showMsgUntil = 0; // timestamp to stop showing "Collision!"
 
