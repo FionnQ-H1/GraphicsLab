@@ -34,6 +34,9 @@
         // Make the fill style red.
         ctx.fillStyle = "rgb(255, 0, 0)";
 
+        var leftScore = 0;
+        var rightScore = 0;
+
         class Paddle {
             constructor(x, y, width, height, speed) {
                 this.x = x;
@@ -87,10 +90,23 @@
                 this.x += this.dx;
                 this.y += this.dy;
 
+                // Top/bottom walls
                 if (this.y + this.r >= canvas.height) { this.y = canvas.height - this.r; this.dy = -Math.abs(this.dy); }
                 if (this.y - this.r <= 0)             { this.y = this.r;               this.dy =  Math.abs(this.dy); }
-                if (this.x + this.r >= canvas.width)  { this.x = canvas.width - this.r; this.dx = -Math.abs(this.dx); }
-                if (this.x - this.r <= 0)             { this.x = this.r;                this.dx =  Math.abs(this.dx); }
+
+                // Right wall (behind right paddle) → decrement RIGHT score
+                if (this.x + this.r >= canvas.width)  { 
+                    this.x = canvas.width - this.r; 
+                    this.dx = -Math.abs(this.dx); 
+                    rightScore -= 1;
+                }
+
+                // Left wall (behind left paddle) → decrement LEFT score
+                if (this.x - this.r <= 0)             { 
+                    this.x = this.r;                
+                    this.dx =  Math.abs(this.dx); 
+                    leftScore -= 1;
+                }
             }
         }
 
@@ -139,31 +155,43 @@
             }
         }
 
+        function drawScores() {
+            ctx.save();
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("L: " + leftScore, 10, 20);
+            ctx.fillText("R: " + rightScore, canvas.width - 50, 20);
+            ctx.restore();
+        }
+
         function repeatme() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             matchBall.move();
             matchBall.draw();
 
-            // collisions with paddles
+            // collisions with paddles (+1 score on touch)
             var lc = leftPaddle.center();
             var rc = rightPaddle.center();
 
             if (circlesCollide(matchBall.x, matchBall.y, matchBall.r, lc.cx, lc.cy, lc.r)) {
                 matchBall.dx = Math.abs(matchBall.dx); // rebound to the right
                 matchBall.x = lc.cx + lc.r + matchBall.r; // separate a bit
+                leftScore += 1;
                 showMsgUntil = Date.now() + 1000;
             }
 
             if (circlesCollide(matchBall.x, matchBall.y, matchBall.r, rc.cx, rc.cy, rc.r)) {
                 matchBall.dx = -Math.abs(matchBall.dx); // rebound to the left
                 matchBall.x = rc.cx - rc.r - matchBall.r;
+                rightScore += 1;
                 showMsgUntil = Date.now() + 1000;
             }
 
             leftPaddle.draw();
             rightPaddle.draw();
 
+            drawScores();
             drawMessage();
 
             window.requestAnimationFrame(repeatme);
