@@ -31,8 +31,9 @@
         var canvas = document.getElementById("canvas-for-ball");
         // Get a 2D context for the canvas.
         var ctx = canvas.getContext("2d");
+        // Make the fill style red.
+        ctx.fillStyle = "rgb(255, 0, 0)";
 
-        // Paddle class (rectangle for base step)
         class Paddle {
             constructor(x, y, width, height, speed) {
                 this.x = x;
@@ -42,9 +43,18 @@
                 this.speed = speed || 6;
             }
 
+            center() {
+                return {
+                    cx: this.x + this.width / 2,
+                    cy: this.y + this.height / 2,
+                    r: Math.min(this.width, this.height) / 2
+                };
+            }
+
             draw() {
+                var c = this.center();
                 ctx.beginPath();
-                ctx.rect(this.x, this.y, this.width, this.height);
+                ctx.arc(c.cx, c.cy, c.r, 0, Math.PI * 2);
                 ctx.stroke();
             }
 
@@ -55,8 +65,47 @@
             }
         }
 
+        class MatchBall {
+            constructor(x, y, r, dx, dy, color) {
+                this.x = x;
+                this.y = y;
+                this.r = r;
+                this.dx = dx;
+                this.dy = dy;
+                this.color = color || "rgb(200,0,0)";
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            move() {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                if (this.y + this.r >= canvas.height) { this.y = canvas.height - this.r; this.dy = -Math.abs(this.dy); }
+                if (this.y - this.r <= 0)             { this.y = this.r;               this.dy =  Math.abs(this.dy); }
+                if (this.x + this.r >= canvas.width)  { this.x = canvas.width - this.r; this.dx = -Math.abs(this.dx); }
+                if (this.x - this.r <= 0)             { this.x = this.r;                this.dx =  Math.abs(this.dx); }
+            }
+        }
+
+        function circlesCollide(x1, y1, r1, x2, y2, r2) {
+            var dx = x2 - x1;
+            var dy = y2 - y1;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            return dist < (r1 + r2);
+        }
+
         var leftPaddle = new Paddle(10, 160, 10, 80, 8);
         var rightPaddle = new Paddle(canvas.width - 20, 160, 10, 80, 8); // mirrored on the right
+        var matchBall = new MatchBall(200, 120, 10, 3, 2, "rgb(200,0,0)");
+
+        var showMsgUntil = 0; // timestamp to stop showing "Collision!"
 
         // ArrowUp / ArrowDown control the left paddle
         window.addEventListener("keydown", function (e) {
@@ -80,11 +129,42 @@
             }
         });
 
+        function drawMessage() {
+            if (Date.now() < showMsgUntil) {
+                ctx.save();
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "black";
+                ctx.fillText("Collision!", 155, 30);
+                ctx.restore();
+            }
+        }
+
         function repeatme() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            matchBall.move();
+            matchBall.draw();
+
+            // collisions with paddles
+            var lc = leftPaddle.center();
+            var rc = rightPaddle.center();
+
+            if (circlesCollide(matchBall.x, matchBall.y, matchBall.r, lc.cx, lc.cy, lc.r)) {
+                matchBall.dx = Math.abs(matchBall.dx); // rebound to the right
+                matchBall.x = lc.cx + lc.r + matchBall.r; // separate a bit
+                showMsgUntil = Date.now() + 1000;
+            }
+
+            if (circlesCollide(matchBall.x, matchBall.y, matchBall.r, rc.cx, rc.cy, rc.r)) {
+                matchBall.dx = -Math.abs(matchBall.dx); // rebound to the left
+                matchBall.x = rc.cx - rc.r - matchBall.r;
+                showMsgUntil = Date.now() + 1000;
+            }
+
             leftPaddle.draw();
             rightPaddle.draw();
+
+            drawMessage();
 
             window.requestAnimationFrame(repeatme);
         }
