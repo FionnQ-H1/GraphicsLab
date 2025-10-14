@@ -131,7 +131,9 @@
 
         var leftPaddle = new Paddle(10, 160, 10, 80, 8);
         var rightPaddle = new Paddle(canvas.width - 20, 160, 10, 80, 8); // mirrored on the right
-        var matchBall = new MatchBall(200, 120, 10, 3, 2);
+
+        // Balls array (start with one)
+        var balls = [ new MatchBall(200, 120, 10, 3, 2) ];
 
         var showMsgUntil = 0; // timestamp to stop showing "Collision!"
 
@@ -143,6 +145,15 @@
             // W / S control the right paddle
             if (e.key === "w" || e.key === "W") rightPaddle.moveDy(-rightPaddle.speed);
             if (e.key === "s" || e.key === "S") rightPaddle.moveDy(rightPaddle.speed);
+
+            // Press N to add a new match ball with random size & velocity
+            if (e.key === "n" || e.key === "N") {
+                var r = 8 + Math.random() * 8;
+                var dx = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random() * 2.5);
+                var dy = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random() * 2.5);
+                // Spawn near center to avoid instant wall score swings
+                balls.push(new MatchBall(canvas.width / 2, canvas.height / 2, r, dx, dy));
+            }
         });
 
         // Mouse moves the left paddle to the cursor's Y (canvas-relative, centered)
@@ -179,25 +190,29 @@
         function repeatme() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            matchBall.move();
-            matchBall.draw();
+            // Update/draw all balls
+            for (var i = 0; i < balls.length; i++) {
+                var b = balls[i];
+                b.move();
+                b.draw();
 
-            // collisions with paddles (+1 score on touch)
-            var lc = leftPaddle.center();
-            var rc = rightPaddle.center();
+                // collisions with paddles (+1 score on touch)
+                var lc = leftPaddle.center();
+                var rc = rightPaddle.center();
 
-            if (circlesCollide(matchBall.x, matchBall.y, matchBall.r, lc.cx, lc.cy, lc.r)) {
-                matchBall.dx = Math.abs(matchBall.dx); // rebound to the right
-                matchBall.x = lc.cx + lc.r + matchBall.r; // separate a bit
-                leftScore += 1;
-                showMsgUntil = Date.now() + 1000;
-            }
+                if (circlesCollide(b.x, b.y, b.r, lc.cx, lc.cy, lc.r)) {
+                    b.dx = Math.abs(b.dx); // rebound to the right
+                    b.x = lc.cx + lc.r + b.r; // separate a bit
+                    leftScore += 1;
+                    showMsgUntil = Date.now() + 1000;
+                }
 
-            if (circlesCollide(matchBall.x, matchBall.y, matchBall.r, rc.cx, rc.cy, rc.r)) {
-                matchBall.dx = -Math.abs(matchBall.dx); // rebound to the left
-                matchBall.x = rc.cx - rc.r - matchBall.r;
-                rightScore += 1;
-                showMsgUntil = Date.now() + 1000;
+                if (circlesCollide(b.x, b.y, b.r, rc.cx, rc.cy, rc.r)) {
+                    b.dx = -Math.abs(b.dx); // rebound to the left
+                    b.x = rc.cx - rc.r - b.r;
+                    rightScore += 1;
+                    showMsgUntil = Date.now() + 1000;
+                }
             }
 
             leftPaddle.draw();
