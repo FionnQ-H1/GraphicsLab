@@ -30,6 +30,9 @@
         var geometry = new THREE.SphereGeometry(15, 32, 16);
         var material = new THREE.MeshLambertMaterial({ color: 0x44aa88, wireframe: false });
         var sphere = new THREE.Mesh(geometry, material);
+
+        sphere.position.x = -20;
+
         scene.add(sphere);
 
         // Spotlight
@@ -37,10 +40,15 @@
         spotLight.position.set(1, 0.5, 1);
         scene.add(spotLight);
 
-        // Rotate and render sphere
+        // Rotate, translate, and render sphere
         function repeatMe() {
             sphere.rotation.x += 0.01;
             sphere.rotation.y += 0.01;
+
+            sphere.position.x += 0.1;
+            if (sphere.position.x > 20) {
+                sphere.position.x = -20;
+            }
 
             renderer.render(scene, camera);
 
