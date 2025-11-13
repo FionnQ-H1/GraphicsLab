@@ -50,7 +50,7 @@
                     this.mesh.position.x = -20;
                 }
 
-                this.velocityY -= 0.05;
+                this.velocityY -= 0.08;
                 this.mesh.position.y += this.velocityY;
 
                 if (this.mesh.position.y <= -5) {
@@ -61,10 +61,9 @@
         }
 
         var sphereA = new MovingSphere(-20, 40);
-        var sphereB = new MovingSphere(10, 25);
+        var sphereB = new MovingSphere(10, 35);
         sphereB.velocityX = -0.1;
 
-        // Collision detection
         function handleCollision() {
             var dx = sphereA.mesh.position.x - sphereB.mesh.position.x;
             var dy = sphereA.mesh.position.y - sphereB.mesh.position.y;
@@ -73,7 +72,6 @@
             if (distance < 30) {
                 sphereA.velocityX *= -1;
                 sphereB.velocityX *= -1;
-
                 sphereA.velocityY = 0.5;
                 sphereB.velocityY = 0.5;
             }
