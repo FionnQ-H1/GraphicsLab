@@ -29,13 +29,14 @@
 
         // Sphere class
         class MovingSphere {
-            constructor() {
+            constructor(xStart, yStart) {
                 var geometry = new THREE.SphereGeometry(15, 32, 16);
                 var material = new THREE.MeshLambertMaterial({ color: 0x44aa88, wireframe: false });
                 this.mesh = new THREE.Mesh(geometry, material);
-                this.mesh.position.x = -20;
-                this.mesh.position.y = 40;
+                this.mesh.position.x = xStart;
+                this.mesh.position.y = yStart;
                 this.mesh.castShadow = true;
+                this.velocityX = 0.1;
                 this.velocityY = 0;
                 scene.add(this.mesh);
             }
@@ -44,7 +45,7 @@
                 this.mesh.rotation.x += 0.01;
                 this.mesh.rotation.y += 0.01;
 
-                this.mesh.position.x += 0.1;
+                this.mesh.position.x += this.velocityX;
                 if (this.mesh.position.x > 20) {
                     this.mesh.position.x = -20;
                 }
@@ -59,7 +60,24 @@
             }
         }
 
-        var movingSphere = new MovingSphere();
+        var sphereA = new MovingSphere(-20, 40);
+        var sphereB = new MovingSphere(10, 25);
+        sphereB.velocityX = -0.1;
+
+        // Collision detection
+        function handleCollision() {
+            var dx = sphereA.mesh.position.x - sphereB.mesh.position.x;
+            var dy = sphereA.mesh.position.y - sphereB.mesh.position.y;
+            var distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 30) {
+                sphereA.velocityX *= -1;
+                sphereB.velocityX *= -1;
+
+                sphereA.velocityY = 0.5;
+                sphereB.velocityY = 0.5;
+            }
+        }
 
         // Spotlight
         var spotLight = new THREE.SpotLight(0xffffff);
@@ -82,7 +100,10 @@
 
         // Render loop
         function repeatMe() {
-            movingSphere.update();
+            sphereA.update();
+            sphereB.update();
+
+            handleCollision();
 
             renderer.render(scene, camera);
 
