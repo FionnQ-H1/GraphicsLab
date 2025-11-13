@@ -27,6 +27,14 @@
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
+        // Cube walls boundaries
+        var wallLeft = -40;
+        var wallRight = 40;
+        var wallTop = 40;
+        var wallBottom = -20;
+        var wallFront = 40;
+        var wallBack = -40;
+
         // Sphere class
         class MovingSphere {
             constructor(xStart, yStart) {
@@ -35,9 +43,11 @@
                 this.mesh = new THREE.Mesh(geometry, material);
                 this.mesh.position.x = xStart;
                 this.mesh.position.y = yStart;
+                this.mesh.position.z = 0;
                 this.mesh.castShadow = true;
                 this.velocityX = 0.1;
                 this.velocityY = 0;
+                this.velocityZ = 0.1;
                 scene.add(this.mesh);
             }
 
@@ -46,16 +56,34 @@
                 this.mesh.rotation.y += 0.01;
 
                 this.mesh.position.x += this.velocityX;
-                if (this.mesh.position.x > 20) {
-                    this.mesh.position.x = -20;
+                if (this.mesh.position.x > wallRight) {
+                    this.mesh.position.x = wallRight;
+                    this.velocityX *= -1;
+                }
+                if (this.mesh.position.x < wallLeft) {
+                    this.mesh.position.x = wallLeft;
+                    this.velocityX *= -1;
                 }
 
                 this.velocityY -= 0.08;
                 this.mesh.position.y += this.velocityY;
-
-                if (this.mesh.position.y <= -5) {
-                    this.mesh.position.y = -5;
+                if (this.mesh.position.y <= wallBottom) {
+                    this.mesh.position.y = wallBottom;
                     this.velocityY *= -0.7;
+                }
+                if (this.mesh.position.y > wallTop) {
+                    this.mesh.position.y = wallTop;
+                    this.velocityY *= -1;
+                }
+
+                this.mesh.position.z += this.velocityZ;
+                if (this.mesh.position.z > wallFront) {
+                    this.mesh.position.z = wallFront;
+                    this.velocityZ *= -1;
+                }
+                if (this.mesh.position.z < wallBack) {
+                    this.mesh.position.z = wallBack;
+                    this.velocityZ *= -1;
                 }
             }
         }
@@ -67,13 +95,16 @@
         function handleCollision() {
             var dx = sphereA.mesh.position.x - sphereB.mesh.position.x;
             var dy = sphereA.mesh.position.y - sphereB.mesh.position.y;
-            var distance = Math.sqrt(dx * dx + dy * dy);
+            var dz = sphereA.mesh.position.z - sphereB.mesh.position.z;
+            var distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
             if (distance < 30) {
                 sphereA.velocityX *= -1;
                 sphereB.velocityX *= -1;
                 sphereA.velocityY = 0.5;
                 sphereB.velocityY = 0.5;
+                sphereA.velocityZ *= -1;
+                sphereB.velocityZ *= -1;
             }
         }
 
@@ -95,6 +126,14 @@
         plane.position.y = -20;
         plane.receiveShadow = true;
         scene.add(plane);
+
+        // Transparent cube
+        var cubeGeometry = new THREE.BoxGeometry(200, 200, 200);
+        var cubeMaterial = new THREE.MeshLambertMaterial({ color: 0x999999, transparent: true, opacity: 0.2 });
+        var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        cube.receiveShadow = true;
+        cube.position.y = 0;
+        scene.add(cube);
 
         // Render loop
         function repeatMe() {
