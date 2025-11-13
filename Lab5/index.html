@@ -34,7 +34,9 @@
                 var material = new THREE.MeshLambertMaterial({ color: 0x44aa88, wireframe: false });
                 this.mesh = new THREE.Mesh(geometry, material);
                 this.mesh.position.x = -20;
+                this.mesh.position.y = 40;
                 this.mesh.castShadow = true;
+                this.velocityY = 0;
                 scene.add(this.mesh);
             }
 
@@ -45,6 +47,14 @@
                 this.mesh.position.x += 0.1;
                 if (this.mesh.position.x > 20) {
                     this.mesh.position.x = -20;
+                }
+
+                this.velocityY -= 0.05;
+                this.mesh.position.y += this.velocityY;
+
+                if (this.mesh.position.y <= -5) {
+                    this.mesh.position.y = -5;
+                    this.velocityY *= -0.7;
                 }
             }
         }
