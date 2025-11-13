@@ -26,29 +26,37 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Creating a sphere and adding it to the scene
-        var geometry = new THREE.SphereGeometry(15, 32, 16);
-        var material = new THREE.MeshLambertMaterial({ color: 0x44aa88, wireframe: false });
-        var sphere = new THREE.Mesh(geometry, material);
+        // Sphere class
+        class MovingSphere {
+            constructor() {
+                var geometry = new THREE.SphereGeometry(15, 32, 16);
+                var material = new THREE.MeshLambertMaterial({ color: 0x44aa88, wireframe: false });
+                this.mesh = new THREE.Mesh(geometry, material);
+                this.mesh.position.x = -20;
+                scene.add(this.mesh);
+            }
 
-        sphere.position.x = -20;
+            update() {
+                this.mesh.rotation.x += 0.01;
+                this.mesh.rotation.y += 0.01;
 
-        scene.add(sphere);
+                this.mesh.position.x += 0.1;
+                if (this.mesh.position.x > 20) {
+                    this.mesh.position.x = -20;
+                }
+            }
+        }
+
+        var movingSphere = new MovingSphere();
 
         // Spotlight
         var spotLight = new THREE.SpotLight(0xffffff);
         spotLight.position.set(1, 0.5, 1);
         scene.add(spotLight);
 
-        // Rotate, translate, and render sphere
+        // Render loop
         function repeatMe() {
-            sphere.rotation.x += 0.01;
-            sphere.rotation.y += 0.01;
-
-            sphere.position.x += 0.1;
-            if (sphere.position.x > 20) {
-                sphere.position.x = -20;
-            }
+            movingSphere.update();
 
             renderer.render(scene, camera);
 
